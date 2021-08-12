@@ -1,48 +1,81 @@
 variables:
-  public-space:        &public-space         public-space
+  admin-api:        &admin-api         admin-api
+  internal-api:     &internal-api      internal-api
+  public-api:       &public-api        public-api
+  storage-data:     &storage-data      storage-data
+  storage-cluster:  &storage-cluster   storage-cluster
 applications:
   ceph-mon:
     bindings:
-      "": *public-space
+      public: *storage-data
+      cluster: *storage-cluster
+  ceph-osd:
+    bindings:
+      public: *storage-data
+      cluster: *storage-cluster
   ceph-radosgw:
     bindings:
-      "": *public-space
+        public: *public-api
+        admin: *admin-api
+        internal: *internal-api
   cinder:
     bindings:
-      "": *public-space
+        public: *public-api
+        admin: *admin-api
+        internal: *internal-api
+        shared-db: *internal-api
   glance:
     bindings:
-      "": *public-space
+        public: *public-api
+        admin: *admin-api
+        internal: *internal-api
   keystone:
     bindings:
-      "": *public-space
+        public: *public-api
+        admin: *admin-api
+        internal: *internal-api
+        shared-db: *internal-api
   mysql-innodb-cluster:
     bindings:
-      "": *public-space
+      "": *internal-api
   neutron-api:
     bindings:
-      "": *public-space
+        public: *public-api
+        admin: *admin-api
+        internal: *internal-api
+        shared-db: *internal-api
   placement:
     bindings:
-      "": *public-space
+        public: *public-api
+        admin: *admin-api
+        internal: *internal-api
+        shared-db: *internal-api
   nova-cloud-controller:
     bindings:
-      "": *public-space
+        public: *public-api
+        admin: *admin-api
+        internal: *internal-api
+        shared-db: *internal-api
   nova-compute:
     bindings:
-      "": *public-space
+      "": *internal-api
   openstack-dashboard:
     bindings:
-      "": *public-space
+        public: *public-api
+        shared-db: *internal-api
   rabbitmq-server:
     bindings:
-      "": *public-space
+      "": *internal-api
   ovn-central:
     bindings:
-      "": *public-space
+      "": *internal-api
   vault:
     bindings:
-      "": *public-space
+      "": *internal-api
   ntp:
     bindings:
-      "": *public-space
+      "": *internal-api
+  glance-simplestreams-sync:
+    bindings:
+      "": *internal-api
+

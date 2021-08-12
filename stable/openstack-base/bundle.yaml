@@ -4,14 +4,15 @@
 series: focal
 variables:
   openstack-origin: &openstack-origin cloud:focal-wallaby
-  data-port: &data-port br-ex:eno2
+  data-port: &data-port br-ex:eno2.99
   worker-multiplier: &worker-multiplier 0.25
-  osd-devices: &osd-devices /dev/sdb /dev/vdb
+  osd-devices: &osd-devices /dev/sdb /dev/sdc /dev/sdd
   expected-osd-count: &expected-osd-count 3
   expected-mon-count: &expected-mon-count 3
 machines:
   '0':
   '1':
+    constraints: tags=PE-R720
   '2':
 relations:
 - - nova-compute:amqp
@@ -132,6 +133,10 @@ relations:
   - ceph-radosgw:certificates
 - - vault:certificates
   - mysql-innodb-cluster:certificates
+- - glance-simplestreams-sync:certificates
+  - vault:certificates
+- - glance-simplestreams-sync:identity-service
+  - keystone:identity-service
 applications:
   ceph-mon:
     annotations:
@@ -210,6 +215,13 @@ applications:
       openstack-origin: *openstack-origin
     to:
     - lxd:2
+  glance-simplestreams-sync:
+    charm: cs:glance-simplestreams-sync
+    num_units: 1
+    options:
+      run: true
+    to:
+      - lxd:2
   keystone-mysql-router:
     annotations:
       gui-x: '230'
@@ -222,6 +234,7 @@ applications:
     charm: cs:keystone-323
     num_units: 1
     options:
+      admin-password: password
       worker-multiplier: *worker-multiplier
       openstack-origin: *openstack-origin
     to:
@@ -245,6 +258,7 @@ applications:
     options:
       neutron-security-groups: true
       flat-network-providers: physnet1
+      neutron-external-network: ext_net
       worker-multiplier: *worker-multiplier
       openstack-origin: *openstack-origin
     to:
@@ -277,6 +291,7 @@ applications:
     charm: cs:nova-cloud-controller-355
     num_units: 1
     options:
+      console-access-protocol: spice
       network-manager: Neutron
       worker-multiplier: *worker-multiplier
       openstack-origin: *openstack-origin
@@ -289,6 +304,8 @@ applications:
     charm: cs:nova-compute-327
     num_units: 3
     options:
+      libvirt-image-backend: rbd
+      rbd-pool: cinder-ceph
       config-flags: default_ephemeral_format=ext4
       enable-live-migration: true
       enable-resize: true
@@ -315,6 +332,8 @@ applications:
       gui-y: '900'
     charm: cs:openstack-dashboard-313
     num_units: 1
+    bindings:
+        "": public-api
     options:
       openstack-origin: *openstack-origin
     to:
