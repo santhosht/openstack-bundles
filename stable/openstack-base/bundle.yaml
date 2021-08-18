@@ -4,16 +4,18 @@
 series: focal
 variables:
   openstack-origin: &openstack-origin cloud:focal-wallaby
-  data-port: &data-port br-ex:eno2.99
+  data-port: &data-port br-ex:eno1.99
   worker-multiplier: &worker-multiplier 0.25
-  osd-devices: &osd-devices /dev/sdb /dev/sdc /dev/sdd
-  expected-osd-count: &expected-osd-count 3
-  expected-mon-count: &expected-mon-count 3
 machines:
   '0':
   '1':
-    constraints: tags=PE-R720
   '2':
+saas:
+  ceph-mon-client:
+    url: maas-controller:admin/ceph-model.ceph-mon-client
+  ceph-mon-radosgw:
+    url: maas-controller:admin/ceph-model.ceph-mon-radosgw
+
 relations:
 - - nova-compute:amqp
   - rabbitmq-server:amqp
@@ -49,20 +51,18 @@ relations:
   - nova-cloud-controller:cinder-volume-service
 - - cinder-ceph:storage-backend
   - cinder:storage-backend
-- - ceph-mon:client
+- - ceph-mon-client:client
   - nova-compute:ceph
 - - nova-compute:ceph-access
   - cinder-ceph:ceph-access
-- - ceph-mon:client
+- - ceph-mon-client:client
   - cinder-ceph:ceph
-- - ceph-mon:client
+- - ceph-mon-client:client
   - glance:ceph
-- - ceph-osd:mon
-  - ceph-mon:osd
 - - ntp:juju-info
   - nova-compute:juju-info
 - - ceph-radosgw:mon
-  - ceph-mon:radosgw
+  - ceph-mon-radosgw:radosgw
 - - ceph-radosgw:identity-service
   - keystone:identity-service
 - - placement:identity-service
@@ -138,33 +138,6 @@ relations:
 - - glance-simplestreams-sync:identity-service
   - keystone:identity-service
 applications:
-  ceph-mon:
-    annotations:
-      gui-x: '790'
-      gui-y: '1540'
-    charm: cs:ceph-mon-55
-    num_units: 3
-    options:
-      expected-osd-count: *expected-osd-count
-      monitor-count: *expected-mon-count
-      source: *openstack-origin
-    to:
-    - lxd:0
-    - lxd:1
-    - lxd:2
-  ceph-osd:
-    annotations:
-      gui-x: '1065'
-      gui-y: '1540'
-    charm: cs:ceph-osd-310
-    num_units: 3
-    options:
-      osd-devices: *osd-devices
-      source: *openstack-origin
-    to:
-    - '0'
-    - '1'
-    - '2'
   ceph-radosgw:
     annotations:
       gui-x: '850'
