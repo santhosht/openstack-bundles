@@ -6,13 +6,12 @@ variables:
   openstack-origin: &openstack-origin cloud:focal-wallaby
   data-port: &data-port br-ex:eno2.99
   worker-multiplier: &worker-multiplier 0.25
-  osd-devices: &osd-devices /dev/sdb /dev/sdc /dev/sdd
+  osd-devices: &osd-devices /dev/sdb /dev/sdc /dev/sdd /dev/sde /dev/sdf
   expected-osd-count: &expected-osd-count 3
   expected-mon-count: &expected-mon-count 3
 machines:
   '0':
   '1':
-    constraints: tags=PE-R720
   '2':
 relations:
 - - nova-compute:amqp
@@ -336,6 +335,7 @@ applications:
         "": public-api
     options:
       openstack-origin: *openstack-origin
+      password-retrieve: true
     to:
     - lxd:1
   rabbitmq-server:

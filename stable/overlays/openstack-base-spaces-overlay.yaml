@@ -7,11 +7,11 @@ variables:
 applications:
   ceph-mon:
     bindings:
-      public: *storage-data
+      public: *public-api
       cluster: *storage-cluster
   ceph-osd:
     bindings:
-      public: *storage-data
+      public: *public-api
       cluster: *storage-cluster
   ceph-radosgw:
     bindings:
