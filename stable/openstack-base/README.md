@@ -4,7 +4,7 @@ This `openstack-base` bundle deploys a base OpenStack cloud. Its major elements
 include:
 
 * Ubuntu 20.04 LTS (Focal)
-* OpenStack Wallaby
+* OpenStack Xena
 * Ceph Pacific
 
 Cloud services consist of Compute, Network, Block Storage, Object Storage,
@@ -32,7 +32,7 @@ The MAAS cluster must have a minimum of four nodes:
 
   The first disk is used for the node's operating system, and the second is for
   Ceph storage.
-  
+
   The first network interface is used for communication between cloud services
   (East/West traffic), and the second is for network traffic between the cloud
   and all external networks (North/South traffic).
@@ -87,7 +87,7 @@ A `variables:` section is used for conveniently setting values in one place.
 The third column contains the actual values.
 
     variables:
-      openstack-origin:    &openstack-origin     cloud:focal-wallaby
+      openstack-origin:    &openstack-origin     cloud:focal-xena
       data-port:           &data-port            br-ex:eno2
       worker-multiplier:   &worker-multiplier    0.25
       osd-devices:         &osd-devices          /dev/sdb /dev/vdb
@@ -183,7 +183,7 @@ You'll need to import an image into Glance in order to create instances.
 
 First download a boot image, like Focal amd64:
 
-    curl http://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+    curl http://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img \
        --output ~/cloud-images/focal-amd64.img
 
 Now import the image and call it 'focal-amd64':
@@ -198,7 +198,7 @@ way.
 For the ARM 64-bit (arm64) architecture you will need to configure the image to
 boot in UEFI mode:
 
-    curl http://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+    curl http://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img \
        --output ~/cloud-images/focal-arm64.img
 
     openstack image create --public --container-format bare \
@@ -236,7 +236,7 @@ router ('provider-router'):
     openstack network create int_net
 
     openstack subnet create --network int_net --dns-nameserver 8.8.8.8 \
-       --gateway 192.168.0.1 --subnet-range 192.168.0/24 \
+       --gateway 192.168.0.1 --subnet-range 192.168.0.0/24 \
        --allocation-pool start=192.168.0.10,end=192.168.0.200 \
        int_subnet
 
@@ -352,8 +352,8 @@ The below resources are recommended for further reading:
 [OpenStack Neutron]: http://docs.openstack.org/admin-guide-cloud/content/ch_networking.html
 [OpenStack Admin Guide]: http://docs.openstack.org/user-guide-admin/content
 [Ubuntu Cloud Images]: http://cloud-images.ubuntu.com/focal/current/
-[cdg]: https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/wallaby/
-[cdg-install-openstack]: https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/wallaby/install-openstack.html
+[cdg]: https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/xena/
+[cdg-install-openstack]: https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/xena/install-openstack.html
 [openstack-bundles]: https://github.com/openstack-charmers/openstack-bundles
 [juju-overlays]: https://jaas.ai/docs/charm-bundles#heading--overlay-bundles
 [juju-spaces]: https://jaas.ai/docs/spaces
